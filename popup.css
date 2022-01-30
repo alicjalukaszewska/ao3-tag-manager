@@ -1,0 +1,114 @@
+
+
+body {
+  min-width: 400px;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.tags-wrapper {
+  padding: 0 10px;
+}
+
+h3 {
+  border-bottom: 1px solid gray;
+  margin-bottom: 0;
+}
+
+.tag-input {
+  width: 100%;
+}
+
+.tag-input label {
+  display: flex;
+}
+
+.tag-input input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  box-sizing: border-box;
+
+}
+
+.save-btn {
+  width: 100%;
+  background-color: #900;
+  color: #fff;
+  border: 0;
+  padding: 16px;
+  margin: 15px 0;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background-color: rgb(110, 0, 0);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.list li {
+  margin: 10px 0 ;
+  padding: 10px;
+  padding-left: 40px;
+  border: 1px solid #dfdfdf;
+  background: #f5f5f5;
+  cursor: move;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  transition: 0.1s;
+}
+
+.list li:before {
+  position: absolute;
+  content: '\2261';
+  font-size: 20px;
+  left: 10px;
+  top: 10px;
+  line-height: 1;
+}
+
+.list button {
+  border-radius: 50%;
+  background-color: #900;
+  color: #fff;
+  border: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.6rem;
+}
+
+.list button:hover {
+  background-color: rgb(110, 0, 0);
+}
+
+.list li.hint {
+  opacity: 0.55;
+}
+.list li.active {
+  border: 1px solid #900;
+  background: rgb(247, 217, 217);
+  opacity: 1;
+}
+
+.list li.ready {
+  border: 1px solid rgb(0, 153, 115);
+  background: rgb(217, 247, 217);
+  opacity: 1;
+  transition: 0.3s;
+}
