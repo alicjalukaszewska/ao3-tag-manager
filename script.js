@@ -6,6 +6,7 @@ chrome.runtime.sendMessage({
 });
 
 const dummyIframeName = "dummy-iframe";
+let clickedButton = "preview_button";
 
 const manageDummyIframe = () => {
   //prevent from creating more than one iframe
@@ -25,17 +26,18 @@ const manageTargetToForm = (add = false) => {
   else form.removeAttribute("target");
 };
 
-const clickPostBtn = () => {
-  const postBtn = document.getElementsByName("post_button")[0];
-  if (postBtn) {
-    postBtn.removeAttribute("data-disable-with");
-    postBtn.click();
+const clickBtn = () => {
+  const btnElement = document.getElementsByName(clickedButton)[0];
+
+  if (btnElement) {
+    btnElement.removeAttribute("data-disable-with");
+    btnElement.click();
   }
 };
 
 const saveWithoutReload = () => {
   manageTargetToForm(true);
-  clickPostBtn();
+  clickBtn();
   manageTargetToForm();
 };
 
@@ -56,13 +58,16 @@ const removeCurrentTags = () => {
 };
 
 const addTagsFromPlugin = (msg) => {
-  const listInput = document.getElementById(
-    `work_${msg.listType}_autocomplete`
-  );
-  listInput.value = msg.tag;
-  listInput.focus();
-  listInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-  listInput.blur();
+  Object.keys(msg.tags).forEach((key) => {
+    const listInput = document.getElementById(`work_${key}_autocomplete`);
+    const tags = msg.tags[key];
+    tags.forEach((tag) => {
+      listInput.value = tag;
+      listInput.focus();
+      listInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      listInput.blur();
+    });
+  });
 };
 
 // Listen for messages from the popup.
@@ -81,6 +86,8 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
   }
 
   if (msg.from === "popup" && msg.subject === "removeTags") {
+    clickedButton = msg.saveType;
+
     removeCurrentTags();
 
     const res = "remove";
@@ -94,7 +101,12 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     response(res);
   }
   if (msg.from === "popup" && msg.subject === "finishedUpdate") {
-    saveWithoutReload();
+    clickedButton = msg.saveType;
+
+    if (msg.saveType === "post_button") saveWithoutReload();
+    else {
+      clickBtn();
+    }
 
     const res = "finished";
     response(res);

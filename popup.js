@@ -1,54 +1,11 @@
 const listTypes = ["relationship", "character", "freeform"];
+let clickedButton = "preview_button";
 
 const saveSuccess = (info) => {
   console.log("saved successfully!", info);
 };
 
-const saveEdits = () => {
-  chrome.tabs.query(
-    {
-      active: true,
-      currentWindow: true,
-    },
-    (tabs) => {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        {
-          from: "popup",
-          subject: "removeTags",
-        },
-        saveSuccess
-      );
-    }
-  );
-
-  listTypes.forEach((type) => {
-    const list = document.getElementById(`${type}-list`);
-    const listItems = list.getElementsByTagName("span");
-    if (!listItems) return;
-
-    [...listItems].forEach((item) => {
-      chrome.tabs.query(
-        {
-          active: true,
-          currentWindow: true,
-        },
-        (tabs) => {
-          chrome.tabs.sendMessage(
-            tabs[0].id,
-            {
-              from: "popup",
-              subject: "updateInfo",
-              tag: item.innerText,
-              listType: type,
-            },
-            saveSuccess
-          );
-        }
-      );
-    });
-  });
-
+const saveNewTags = () => {
   setTimeout(() => {
     chrome.tabs.query(
       {
@@ -61,12 +18,63 @@ const saveEdits = () => {
           {
             from: "popup",
             subject: "finishedUpdate",
+            saveType: clickedButton,
           },
           saveSuccess
         );
       }
     );
-  }, 1500);
+  }, 1000);
+};
+
+const setNewTags = () => {
+  const tagLists = listTypes.map((type) => {
+    const list = document.getElementById(`${type}-list`);
+    const listItems = list.getElementsByTagName("span");
+    if (!listItems) return;
+
+    const items = [...listItems].map((item) => item.innerText);
+    return { [type]: items };
+  });
+  const tagListsObj = Object.assign({}, ...tagLists);
+  chrome.tabs.query(
+    {
+      active: true,
+      currentWindow: true,
+    },
+    (tabs) => {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        {
+          from: "popup",
+          subject: "updateInfo",
+          tags: tagListsObj,
+        },
+        saveNewTags
+      );
+    }
+  );
+};
+
+const saveEdits = (saveType) => {
+  clickedButton = saveType;
+  chrome.tabs.query(
+    {
+      active: true,
+      currentWindow: true,
+    },
+    (tabs) => {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        {
+          from: "popup",
+          subject: "removeTags",
+          saveType,
+        },
+        setNewTags
+      );
+    }
+  );
 };
 
 const manageNewTagInputs = () => {
@@ -195,8 +203,12 @@ window.addEventListener("DOMContentLoaded", () => {
       );
     }
   );
-  const saveBtn = document.getElementById("save-btn");
-  if (saveBtn) saveBtn.addEventListener("click", saveEdits);
+  const postBtn = document.getElementById("post-btn");
+  if (postBtn)
+    postBtn.addEventListener("click", () => saveEdits("post_button"));
+  const previewBtn = document.getElementById("preview-btn");
+  if (previewBtn)
+    previewBtn.addEventListener("click", () => saveEdits("preview_button"));
 
   manageNewTagInputs();
 });

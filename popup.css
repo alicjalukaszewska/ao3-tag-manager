@@ -34,20 +34,40 @@ h3 {
 
 }
 
-.save-btn {
+.buttons-wrapper {
+  display: flex;
+  align-items: center;
   width: 100%;
+  margin: 15px 0;
+}
+
+.buttons-wrapper button {
+  flex: 1;
+  padding: 16px;
+  transition: 0.3s;
+  cursor: pointer;  
+  border: 1px solid #900;
+}
+
+.preview-btn {
   background-color: #900;
   color: #fff;
-  border: 0;
-  padding: 16px;
-  margin: 15px 0;
-  transition: 0.3s;
-  cursor: pointer;
+  margin-left: 1rem;
+}
+
+.preview-btn:hover {
+  background-color: rgb(110, 0, 0);
+}
+
+.save-btn {
+  color: #900;
+  background: transparent;
 }
 
 .save-btn:hover {
-  background-color: rgb(110, 0, 0);
+  background-color: rgba(110, 0, 0, 0.2);
 }
+
 
 .list {
   list-style: none;
