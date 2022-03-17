@@ -6,6 +6,7 @@ const saveSuccess = (info) => {
 };
 
 const saveNewTags = () => {
+  //timeout to make sure this action takes place after the action for deleting old tags
   setTimeout(() => {
     chrome.tabs.query(
       {
@@ -58,6 +59,8 @@ const setNewTags = () => {
 
 const saveEdits = (saveType) => {
   clickedButton = saveType;
+  saveAllNewTagsInputs();
+
   chrome.tabs.query(
     {
       active: true,
@@ -77,16 +80,28 @@ const saveEdits = (saveType) => {
   );
 };
 
+const saveNewInputTag = (input, list) => {
+  const valueWithoutComma = input.value.trim().replace(/[,]+/, "");
+  const tagElement = generateListElement(valueWithoutComma);
+  list.appendChild(tagElement);
+  input.value = "";
+};
+
+const saveAllNewTagsInputs = () => {
+  listTypes.forEach((type) => {
+    const input = document.getElementById(`${type}-input`);
+    const list = document.getElementById(`${type}-list`);
+    saveNewInputTag(input, list);
+  });
+};
+
 const manageNewTagInputs = () => {
   listTypes.forEach((type) => {
-    const list = document.getElementById(`${type}-list`);
     const input = document.getElementById(`${type}-input`);
+    const list = document.getElementById(`${type}-list`);
     input.addEventListener("keyup", (e) => {
       if (e.code === "Comma" || e.code === "Enter") {
-        const valueWithoutComma = input.value.trim().replace(/[,]+/, "");
-        const tagElement = generateListElement(valueWithoutComma);
-        list.appendChild(tagElement);
-        input.value = "";
+        saveNewInputTag(input, list);
       }
     });
   });
@@ -182,6 +197,7 @@ const generateListElements = (info) => {
     const list = document.getElementById(`${tagType}-list`);
     const tags = info[tagType].split(",");
     tags.forEach((tag) => {
+      if (!tag) return;
       const tagElement = generateListElement(tag);
       list.appendChild(tagElement);
     });

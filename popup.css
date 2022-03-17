@@ -15,7 +15,7 @@ ul {
 
 h3 {
   border-bottom: 1px solid gray;
-  margin-bottom: 0;
+  margin-bottom: 10px;
 }
 
 .tag-input {
@@ -49,23 +49,13 @@ h3 {
   border: 1px solid #900;
 }
 
-.preview-btn {
+.save-btn {
   background-color: #900;
   color: #fff;
-  margin-left: 1rem;
-}
-
-.preview-btn:hover {
-  background-color: rgb(110, 0, 0);
-}
-
-.save-btn {
-  color: #900;
-  background: transparent;
 }
 
 .save-btn:hover {
-  background-color: rgba(110, 0, 0, 0.2);
+  background-color: rgb(110, 0, 0);
 }
 
 
@@ -75,7 +65,7 @@ h3 {
   margin: 0;
 }
 .list li {
-  margin: 10px 0 ;
+  margin-bottom: 10px;
   padding: 10px;
   padding-left: 40px;
   border: 1px solid #dfdfdf;

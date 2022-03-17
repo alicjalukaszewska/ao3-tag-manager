@@ -9,7 +9,7 @@
       "scripts": ["background.js"]
     },
     "content_scripts": [{
-      "matches": ["*://*.archiveofourown.org/**/new*", "*://*.archiveofourown.org/**/edit*"],
+      "matches": ["*://*.archiveofourown.org/**/edit*"],
       "js": ["script.js"],
       "run_at": "document_idle",
       "all_frames": false
