@@ -174,7 +174,7 @@ const removeTag = (e) => {
   listElement.remove();
 };
 
-const generateListElement = (tag) => {
+const generateTagListElement = (tag) => {
   const tagElement = document.createElement("li");
   const tagSpanElement = document.createElement("span");
   tagSpanElement.innerHTML = tag.trim();
@@ -191,14 +191,14 @@ const generateListElement = (tag) => {
   return tagElement;
 };
 
-const generateListElements = (info) => {
+const generateListOfTags = (info) => {
   if (!info) return;
   Object.keys(info).forEach((tagType) => {
     const list = document.getElementById(`${tagType}-list`);
     const tags = info[tagType].split(",");
     tags.forEach((tag) => {
       if (!tag) return;
-      const tagElement = generateListElement(tag);
+      const tagElement = generateTagListElement(tag);
       list.appendChild(tagElement);
     });
   });
@@ -215,7 +215,7 @@ window.addEventListener("DOMContentLoaded", () => {
       chrome.tabs.sendMessage(
         tabs[0].id,
         { from: "popup", subject: "DOMInfo" },
-        generateListElements
+        generateListOfTags
       );
     }
   );

@@ -1,6 +1,6 @@
 {
     "name": "Ao3 Tags Manager",
-    "description": "Change order of tags, rename them or add new",
+    "description": "Extension for Archive of Our Own. Change order of tags, delete them or add new to your works.",
     "version": "1.0",
     "manifest_version": 2,
     "permissions": ["activeTab",  "tabs", "storage"],
