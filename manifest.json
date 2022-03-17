@@ -1,0 +1,31 @@
+{
+    "name": "Ao3 Tags Manager",
+    "description": "Extension for Archive of Our Own. Change order of tags, delete them or add new to your works.",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["activeTab",  "tabs", "storage"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [{
+      "matches": ["*://*.archiveofourown.org/**/edit*"],
+      "js": ["script.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "/images/icon16.png",
+        "32": "/images/icon32.png",
+        "48": "/images/icon48.png",
+        "128": "/images/icon128.png"
+      }
+    },
+    "icons": {
+      "16": "/images/icon16.png",
+      "32": "/images/icon32.png",
+      "48": "/images/icon48.png",
+      "128": "/images/icon128.png"
+    }
+  }

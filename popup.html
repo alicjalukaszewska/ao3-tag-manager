@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="tags-wrapper">
+      <div class="tags-group relationship-tags">
+        <h3>Relationship Tags:</h3>
+        <ul id="relationship-list" class="list"></ul>
+        <div class="tag-input">
+          <label for="relationship-input"> Add new (separated by commas or Enter): </label>
+          <input id="relationship-input" type="text" />
+        </div>
+      </div>
+      <div class="tags-group character-tags">
+        <h3>Character Tags:</h3>
+        <ul id="character-list" class="list"></ul>
+        <div class="tag-input">
+          <label for="character-input"> Add new (separated by commas or Enter): </label>
+          <input id="character-input" type="text" />
+        </div>
+      </div>
+      <div class="tags-group freeform-tags">
+        <h3>Additional Tags:</h3>
+        <ul id="freeform-list" class="list"></ul>
+        <div class="tag-input">
+          <label for="freeform-input"></label>
+            Add new (separated by commas or Enter):
+          </label>
+          <input id="freeform-input" type="text" />
+        </div>
+      </div>
+
+      <div class="buttons-wrapper">
+        <button class="save-btn" id="post-btn">Save and Post</button>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
