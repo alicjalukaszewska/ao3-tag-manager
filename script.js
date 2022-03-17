@@ -46,9 +46,9 @@ const removeCurrentTags = () => {
 
   listTypes.forEach((listType) => {
     const tagsOfListParent = document.querySelector(`dd.${listType}`);
-    const removeBtns = tagsOfListParent.querySelectorAll("span.delete a");
-    if (removeBtns && removeBtns.length) {
-      [...removeBtns].forEach((btn) => {
+    const removeButtons = tagsOfListParent.querySelectorAll("span.delete a");
+    if (removeButtons && removeButtons.length) {
+      [...removeButtons].forEach((btn) => {
         btn.click();
       });
     }
@@ -70,9 +70,7 @@ const addTagsFromPlugin = (msg) => {
   });
 };
 
-// Listen for messages from the popup.
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
-  // First, validate the message's structure.
   if (msg.from === "popup" && msg.subject === "DOMInfo") {
     const domInfo = {
       relationship: document.getElementById("work_relationship").value,
@@ -80,8 +78,6 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
       freeform: document.getElementById("work_freeform").value,
     };
 
-    // Directly respond to the sender (popup),
-    // through the specified callback.
     response(domInfo);
   }
 
@@ -112,20 +108,3 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     response(res);
   }
 });
-
-function generateTagList(id) {
-  const tagsInput = document.getElementById(id);
-
-  chrome.runtime.sendMessage({
-    from: "content",
-    subject: tagsInput.value,
-  });
-}
-
-function getTags() {
-  const inputsIds = ["work_relationship", "work_character", "work_freeform"];
-
-  inputsIds.forEach((id) => generateTagList(id));
-}
-
-// getTags();

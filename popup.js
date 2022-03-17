@@ -1,9 +1,6 @@
 const listTypes = ["relationship", "character", "freeform"];
 let clickedButton = "preview_button";
-
-const saveSuccess = (info) => {
-  console.log("saved successfully!", info);
-};
+let currentDraggedItem = null;
 
 const saveNewTags = () => {
   //timeout to make sure this action takes place after the action for deleting old tags
@@ -14,15 +11,11 @@ const saveNewTags = () => {
         currentWindow: true,
       },
       (tabs) => {
-        chrome.tabs.sendMessage(
-          tabs[0].id,
-          {
-            from: "popup",
-            subject: "finishedUpdate",
-            saveType: clickedButton,
-          },
-          saveSuccess
-        );
+        chrome.tabs.sendMessage(tabs[0].id, {
+          from: "popup",
+          subject: "finishedUpdate",
+          saveType: clickedButton,
+        });
       }
     );
   }, 1000);
@@ -82,8 +75,10 @@ const saveEdits = (saveType) => {
 
 const saveNewInputTag = (input, list) => {
   const valueWithoutComma = input.value.trim().replace(/[,]+/, "");
-  const tagElement = generateListElement(valueWithoutComma);
+  const tagElement = generateTagListElement(valueWithoutComma);
   list.appendChild(tagElement);
+  const listItems = list.getElementsByTagName("li");
+  addDragEventsToListItem(tagElement, listItems);
   input.value = "";
 };
 
@@ -91,7 +86,7 @@ const saveAllNewTagsInputs = () => {
   listTypes.forEach((type) => {
     const input = document.getElementById(`${type}-input`);
     const list = document.getElementById(`${type}-list`);
-    saveNewInputTag(input, list);
+    if (input.value.trim()) saveNewInputTag(input, list);
   });
 };
 
@@ -107,59 +102,62 @@ const manageNewTagInputs = () => {
   });
 };
 
+const addDragEventsToListItem = (item, listItems) => {
+  item.ondragover = (evt) => {
+    evt.preventDefault();
+  };
+
+  item.ondragstart = () => {
+    currentDraggedItem = item;
+
+    [...listItems].forEach((listItem) => {
+      if (listItem.id !== currentDraggedItem.id) {
+        listItem.classList.add("hint");
+      }
+    });
+  };
+
+  item.ondragenter = () => {
+    if (item.id !== currentDraggedItem.id) {
+      item.classList.add("active");
+    }
+  };
+
+  item.ondragleave = () => {
+    item.classList.remove("active");
+  };
+
+  item.ondragend = () => {
+    [...listItems].forEach((listItem) => {
+      listItem.classList.remove("hint");
+      listItem.classList.remove("active");
+      item.classList.add("ready");
+      setTimeout(() => {
+        item.classList.remove("ready");
+      }, 1000);
+    });
+  };
+
+  item.ondrop = (evt) => {
+    evt.preventDefault();
+    if (item.id !== currentDraggedItem.id) {
+      const currentPosition = [...listItems].indexOf(currentDraggedItem);
+      const droppedPosition = [...listItems].indexOf(item);
+      if (currentPosition < droppedPosition) {
+        item.parentNode.insertBefore(currentDraggedItem, item.nextSibling);
+      } else {
+        item.parentNode.insertBefore(currentDraggedItem, item);
+      }
+    }
+  };
+};
+
 const activateSortList = (target) => {
   const listItems = target.getElementsByTagName("li");
-  let current = null;
-
   if (!listItems) return;
 
   [...listItems].forEach((item) => {
-    item.ondragover = (evt) => {
-      evt.preventDefault();
-    };
-
-    item.ondragstart = () => {
-      current = item;
-      [...listItems].forEach((listItem) => {
-        if (listItem.id !== current.id) {
-          listItem.classList.add("hint");
-        }
-      });
-    };
-
-    item.ondragenter = () => {
-      if (item.id !== current.id) {
-        item.classList.add("active");
-      }
-    };
-
-    item.ondragleave = () => {
-      item.classList.remove("active");
-    };
-
-    item.ondragend = () => {
-      [...listItems].forEach((listItem) => {
-        listItem.classList.remove("hint");
-        listItem.classList.remove("active");
-        item.classList.add("ready");
-        setTimeout(() => {
-          item.classList.remove("ready");
-        }, 1000);
-      });
-    };
-
-    item.ondrop = (evt) => {
-      evt.preventDefault();
-      if (item.id !== current.id) {
-        const currentPosition = [...listItems].indexOf(current);
-        const droppedPosition = [...listItems].indexOf(item);
-        if (currentPosition < droppedPosition) {
-          item.parentNode.insertBefore(current, item.nextSibling);
-        } else {
-          item.parentNode.insertBefore(current, item);
-        }
-      }
-    };
+    addDragEventsToListItem(item, listItems);
   });
 };
 
