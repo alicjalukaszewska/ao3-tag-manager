@@ -42,7 +42,7 @@ const saveWithoutReload = () => {
 };
 
 const removeCurrentTags = () => {
-  const listTypes = ["relationship", "character", "freeform"];
+  const listTypes = ["fandom", "relationship", "character", "freeform"];
 
   listTypes.forEach((listType) => {
     const tagsOfListParent = document.querySelector(`dd.${listType}`);
@@ -73,6 +73,7 @@ const addTagsFromPlugin = (msg) => {
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
   if (msg.from === "popup" && msg.subject === "DOMInfo") {
     const domInfo = {
+      fandom: document.getElementById("work_fandom").value,
       relationship: document.getElementById("work_relationship").value,
       character: document.getElementById("work_character").value,
       freeform: document.getElementById("work_freeform").value,

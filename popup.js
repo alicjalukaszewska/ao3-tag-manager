@@ -1,4 +1,4 @@
-const listTypes = ["relationship", "character", "freeform"];
+const listTypes = ["fandom", "relationship", "character", "freeform"];
 let clickedButton = "preview_button";
 let currentDraggedItem = null;
 
