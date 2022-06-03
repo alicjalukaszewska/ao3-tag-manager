@@ -6,7 +6,7 @@ chrome.runtime.sendMessage({
 });
 
 const dummyIframeName = "dummy-iframe";
-let clickedButton = "preview_button";
+let clickedButton = "post_button";
 
 const manageDummyIframe = () => {
   //prevent from creating more than one iframe
@@ -20,9 +20,9 @@ const manageDummyIframe = () => {
   body.appendChild(iframe);
 };
 
-const manageTargetToForm = (add = false) => {
+const manageTargetToForm = (addTarget = false) => {
   const form = document.getElementById("work-form");
-  if (add) form.target = dummyIframeName;
+  if (addTarget) form.target = dummyIframeName;
   else form.removeAttribute("target");
 };
 
@@ -42,7 +42,7 @@ const saveWithoutReload = () => {
 };
 
 const removeCurrentTags = () => {
-  const listTypes = ["fandom", "relationship", "character", "freeform"];
+  const listTypes = ["relationship", "character", "freeform"];
 
   listTypes.forEach((listType) => {
     const tagsOfListParent = document.querySelector(`dd.${listType}`);
@@ -53,14 +53,13 @@ const removeCurrentTags = () => {
       });
     }
   });
-  manageDummyIframe();
   saveWithoutReload();
 };
 
-const addTagsFromPlugin = (msg) => {
-  Object.keys(msg.tags).forEach((key) => {
+const addTagsFromPlugin = (popupTags) => {
+  Object.keys(popupTags).forEach((key) => {
     const listInput = document.getElementById(`work_${key}_autocomplete`);
-    const tags = msg.tags[key];
+    const tags = popupTags[key];
     tags.forEach((tag) => {
       listInput.value = tag;
       listInput.focus();
@@ -73,7 +72,6 @@ const addTagsFromPlugin = (msg) => {
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
   if (msg.from === "popup" && msg.subject === "DOMInfo") {
     const domInfo = {
-      fandom: document.getElementById("work_fandom").value,
       relationship: document.getElementById("work_relationship").value,
       character: document.getElementById("work_character").value,
       freeform: document.getElementById("work_freeform").value,
@@ -82,30 +80,15 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     response(domInfo);
   }
 
-  if (msg.from === "popup" && msg.subject === "removeTags") {
-    clickedButton = msg.saveType;
+  if (msg.from === "popup" && msg.subject === "saveModifiedTags") {
+    manageDummyIframe();
 
     removeCurrentTags();
+    addTagsFromPlugin(msg.tags);
 
-    const res = "remove";
-    response(res);
-  }
-
-  if (msg.from === "popup" && msg.subject === "updateInfo") {
-    addTagsFromPlugin(msg);
-
-    const res = "add";
-    response(res);
-  }
-  if (msg.from === "popup" && msg.subject === "finishedUpdate") {
-    clickedButton = msg.saveType;
-
-    if (msg.saveType === "post_button") saveWithoutReload();
-    else {
-      clickBtn();
-    }
-
-    const res = "finished";
-    response(res);
+    //timeout to make sure this action takes place after the action for deleting old tags
+    setTimeout(() => {
+      saveWithoutReload();
+    }, 1000);
   }
 });

@@ -1,27 +1,7 @@
-const listTypes = ["fandom", "relationship", "character", "freeform"];
-let clickedButton = "preview_button";
+const listTypes = ["relationship", "character", "freeform"];
 let currentDraggedItem = null;
 
-const saveNewTags = () => {
-  //timeout to make sure this action takes place after the action for deleting old tags
-  setTimeout(() => {
-    chrome.tabs.query(
-      {
-        active: true,
-        currentWindow: true,
-      },
-      (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          from: "popup",
-          subject: "finishedUpdate",
-          saveType: clickedButton,
-        });
-      }
-    );
-  }, 1000);
-};
-
-const setNewTags = () => {
+const getUpdatedTags = () => {
   const tagLists = listTypes.map((type) => {
     const list = document.getElementById(`${type}-list`);
     const listItems = list.getElementsByTagName("span");
@@ -30,29 +10,13 @@ const setNewTags = () => {
     const items = [...listItems].map((item) => item.innerText);
     return { [type]: items };
   });
-  const tagListsObj = Object.assign({}, ...tagLists);
-  chrome.tabs.query(
-    {
-      active: true,
-      currentWindow: true,
-    },
-    (tabs) => {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        {
-          from: "popup",
-          subject: "updateInfo",
-          tags: tagListsObj,
-        },
-        saveNewTags
-      );
-    }
-  );
+  return Object.assign({}, ...tagLists);
 };
 
-const saveEdits = (saveType) => {
-  clickedButton = saveType;
+const saveEdits = () => {
   saveAllNewTagsInputs();
+
+  const tagListsObj = getUpdatedTags();
 
   chrome.tabs.query(
     {
@@ -60,15 +24,11 @@ const saveEdits = (saveType) => {
       currentWindow: true,
     },
     (tabs) => {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        {
-          from: "popup",
-          subject: "removeTags",
-          saveType,
-        },
-        setNewTags
-      );
+      chrome.tabs.sendMessage(tabs[0].id, {
+        from: "popup",
+        subject: "saveModifiedTags",
+        tags: tagListsObj,
+      });
     }
   );
 };
@@ -217,12 +177,9 @@ window.addEventListener("DOMContentLoaded", () => {
       );
     }
   );
-  const postBtn = document.getElementById("post-btn");
-  if (postBtn)
-    postBtn.addEventListener("click", () => saveEdits("post_button"));
-  const previewBtn = document.getElementById("preview-btn");
-  if (previewBtn)
-    previewBtn.addEventListener("click", () => saveEdits("preview_button"));
-
+  //add event listeners to new tags inputs
   manageNewTagInputs();
+
+  const postBtn = document.getElementById("post-btn");
+  if (postBtn) postBtn.addEventListener("click", () => saveEdits());
 });
