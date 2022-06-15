@@ -3,7 +3,6 @@
     "description": "Extension for Archive of Our Own. Change order of tags, delete them or add new to your works.",
     "version": "1.0",
     "manifest_version": 3,
-    "permissions": ["tabs"],
     "background": {
       "service_worker": "background.js"
     },
@@ -29,3 +28,4 @@
       "128": "/images/icon128.png"
     }
   }
+
